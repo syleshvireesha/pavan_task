@@ -33,11 +33,11 @@ const ROLE_GROUP_ADMIN = 'GROUP_ADMIN'
 console.log('userRole:',userRole)
 
 // Redirect to login if not authenticated
-if (!role || role === 'null' || role === 'undefined') {
+if (!userRole || userRole === 'null' || userRole === 'undefined') {
         window.location.href = 'login.html';
     }
 else{
-// Base layers
+////////////////////////////// Base layers///////////////////////////////////////
 const osm = new TileLayer({
   title: 'OSM',
   type: 'base',
@@ -61,6 +61,8 @@ const baseMaps = new LayerGroup({
   fold: 'open',
 });
 
+////////////////////////////// WMS layers///////////////////////////////////////
+
 const geoserverLayer1 = 
   new ImageLayer({
     title: 'India ADM',
@@ -73,6 +75,29 @@ const geoserverLayer1 =
     }),
   })
 geoserverLayer1.set('allowedRoles', [ROLE_ADMIN, ROLE_GROUP_ADMIN]);
+console.log('geoserverLayer1 role:',geoserverLayer1.get('allowedRoles'))
+const wmsLayersList = []
+
+// Add geoserverLayer1 only if the user's role is in the allowed roles
+if (geoserverLayer1.get('allowedRoles').includes(userRole)) {
+  wmsLayersList.push(geoserverLayer1);
+}
+
+// Create the LayerGroup only if there are layers to add
+let WMSLayers = null;
+if (wmsLayersList.length > 0) {
+  WMSLayers = new LayerGroup({
+    title: 'WMS Layers',
+    layers: wmsLayersList,
+    fold: 'open',
+  });
+} else {
+  // Optionally handle the case when no layers are allowed, e.g.:
+  // WMSLayers = new LayerGroup({layers: []});
+  // or leave WMSLayers as null and handle accordingly
+}
+
+////////////////////////////// WFS layers///////////////////////////////////////
 
 // Define vector source to request WFS features based on current extent (bbox strategy)
 const vectorSource = new VectorSource({
@@ -109,26 +134,47 @@ const vectorLayer = new VectorLayer({
   }),
 });
 
-vectorLayer.set('allowedRoles', [ROLE_GROUP_ADMIN]);
+vectorLayer.set('allowedRoles', [ROLE_ADMIN]);
+console.log('vectorLayer role:',vectorLayer.get('allowedRoles'))
+// Add geoserverLayer1 only if the user's role is in the allowed roles
+const wfsLayersList = []
+if (vectorLayer.get('allowedRoles').includes(userRole)) {
+  wfsLayersList.push(vectorLayer);
+}
 
+// Create the LayerGroup only if there are layers to add
+let WFSLayers = null;
+if (wmsLayersList.length > 0) {
+  WFSLayers = new LayerGroup({
+    title: 'WFS Layers',
+    layers: wfsLayersList,
+    fold: 'open',
+  });
+} else {
+  // Optionally handle the case when no layers are allowed, e.g.:
+  // WMSLayers = new LayerGroup({layers: []});
+  // or leave WMSLayers as null and handle accordingly
+}
 
-const WMSLayers = new LayerGroup({
-  title: 'WMS Layers',
-  layers: [geoserverLayer1],
-  fold: 'open',
-});
+////////////////////////////// Map ///////////////////////////////////////
 
+// Initialize array with baseMaps layer(s) — usually always present
+const layersArray = [baseMaps];
 
-const WFSLayers = new LayerGroup({
-  title: 'WFS Layers',
-  layers: [vectorLayer],
-  fold: 'open',
-});
+// Add WMSLayers if it exists and has layers
+if (WMSLayers && WMSLayers.getLayers().getLength() > 0) {
+  layersArray.push(WMSLayers);
+}
 
+// Add WFSLayers similarly if applicable
+if (WFSLayers && WFSLayers.getLayers().getLength() > 0) {
+  layersArray.push(WFSLayers);
+}
 
+// Create the map with conditional layer groups
 const map = new Map({
   target: 'map',
-  layers: [baseMaps, WMSLayers, WFSLayers],
+  layers: layersArray,
   view: new View({
     projection: getProjection('EPSG:4326'),
     center: [82.7524871826172, 21.9159297943115],

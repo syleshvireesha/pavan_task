@@ -3,7 +3,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
-
   // Send login details to backend
   const response = await fetch('http://localhost:3000/api/login', {
     method: 'POST',
