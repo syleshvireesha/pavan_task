@@ -1,6 +1,9 @@
 {
   "name": "wms-tiled",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
     "ol": "10.6.1",
     "ol-layerswitcher": "^4.1.2"
   },
