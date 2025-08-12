@@ -38,7 +38,7 @@ def login():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT password FROM users WHERE username = %s", (username,))
+    cur.execute("SELECT password, role FROM users WHERE username = %s", (username,))
     row = cur.fetchone()
 
     cur.close()
@@ -48,10 +48,14 @@ def login():
         return jsonify({"message": "Invalid username or password"}), 401
 
     stored_hashed_password = row[0].encode('utf-8')
+    user_role = row[1]
 
     # Check the entered password against the stored hashed password
     if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
-        return jsonify({"message": "Login successful"}), 200
+        return jsonify({
+            "message": "Login successful",
+            "role": user_role
+        }), 200
     else:
         return jsonify({"message": "Invalid username or password"}), 401
 

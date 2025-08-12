@@ -16,6 +16,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await response.json();
     // Store token for later use
     localStorage.setItem('token', data.token);
+    localStorage.setItem('role', data.role); // store role
     // Redirect to map page
     window.location.href = 'index.html';
   } else {

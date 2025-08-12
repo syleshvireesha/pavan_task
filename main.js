@@ -23,6 +23,20 @@ import CircleStyle from 'ol/style/Circle.js';
 
 import LayerSwitcher from 'ol-layerswitcher';
 
+// Get the role from localStorage
+const userRole = localStorage.getItem('role');
+
+//listing roles
+const ROLE_ADMIN = 'ADMIN'
+const ROLE_GROUP_ADMIN = 'GROUP_ADMIN'
+
+console.log('userRole:',userRole)
+
+// Redirect to login if not authenticated
+if (!role || role === 'null' || role === 'undefined') {
+        window.location.href = 'login.html';
+    }
+else{
 // Base layers
 const osm = new TileLayer({
   title: 'OSM',
@@ -58,7 +72,7 @@ const geoserverLayer1 =
       serverType: 'geoserver',
     }),
   })
-
+geoserverLayer1.set('allowedRoles', [ROLE_ADMIN, ROLE_GROUP_ADMIN]);
 
 // Define vector source to request WFS features based on current extent (bbox strategy)
 const vectorSource = new VectorSource({
@@ -95,7 +109,8 @@ const vectorLayer = new VectorLayer({
   }),
 });
 
-// console.log(vectorLayer)
+vectorLayer.set('allowedRoles', [ROLE_GROUP_ADMIN]);
+
 
 const WMSLayers = new LayerGroup({
   title: 'WMS Layers',
@@ -103,9 +118,10 @@ const WMSLayers = new LayerGroup({
   fold: 'open',
 });
 
+
 const WFSLayers = new LayerGroup({
   title: 'WFS Layers',
-  layers: [ vectorLayer],
+  layers: [vectorLayer],
   fold: 'open',
 });
 
@@ -127,3 +143,4 @@ const layerSwitcher = new LayerSwitcher({
 });
 
 map.addControl(layerSwitcher);
+}
