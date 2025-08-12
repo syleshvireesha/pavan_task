@@ -13,6 +13,8 @@ import VectorSource from 'ol/source/Vector.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import VectorLayer from 'ol/layer/Vector.js';
+import StadiaMaps from 'ol/source/StadiaMaps.js';
+
 
 import Style from 'ol/style/Style.js';
 import Stroke from 'ol/style/Stroke.js';
@@ -29,16 +31,19 @@ const osm = new TileLayer({
   source: new OSM(),
 });
 
-const satellite = new TileLayer({
-  title: 'Satellite',
-  type: 'base',
-  visible: false,
-  source: new OSM(),
-});
+const stamen_watercolor = new TileLayer({
+      title: 'Stamen Watercolor',
+      type: 'base',
+      visible: false,
+      source: new StadiaMaps({
+        layer: 'stamen_watercolor',
+        // apiKey: 'OPTIONAL'
+      }),
+    });
 
 const baseMaps = new LayerGroup({
   title: 'Base Maps',
-  layers: [osm, satellite],
+  layers: [osm, stamen_watercolor],
   fold: 'open',
 });
 
