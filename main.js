@@ -23,6 +23,9 @@ import CircleStyle from 'ol/style/Circle.js';
 
 import LayerSwitcher from 'ol-layerswitcher';
 
+import Geocoder from 'ol-geocoder';
+
+
 // Get the role from localStorage
 const userRole = localStorage.getItem('role');
 
@@ -182,6 +185,7 @@ const map = new Map({
   }),
 });
 
+////////////////////////////// Layer Switcher ///////////////////////////////////////
 const layerSwitcher = new LayerSwitcher({
   activationMode: 'click',
   startActive: true,
@@ -189,4 +193,18 @@ const layerSwitcher = new LayerSwitcher({
 });
 
 map.addControl(layerSwitcher);
+
+////////////////////////////// Geocoder ///////////////////////////////////////
+
+const geocoder = new Geocoder('nominatim', {
+  provider: 'mapquest',
+  key: '__some_key__',
+  lang: 'en-US', //en-US, fr-FR
+  placeholder: 'Search for ...',
+  targetType: 'text-input',
+  limit: 5,
+  keepOpen: true
+});
+
+map.addControl(geocoder);
 }
