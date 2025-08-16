@@ -292,4 +292,8 @@ document.querySelectorAll('.draw-option').forEach(btn => {
     document.getElementById('drawOptions').style.display = 'none';
   };
 });
+
+
+////////////////////////////// Measure feature ///////////////////////////////////////
+
 }

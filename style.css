@@ -11,10 +11,10 @@ html, body {
 .draw-toolbar {
   position: absolute;
   top: 80px;
-  left: 20px;
+  left: 15px;
   z-index: 1000;
-  display: flex;           /* Make toolbar a flex container */
-  align-items: center;     /* Vertically align items */
+  display: flex;           
+  align-items: center;    
 
 }
 
@@ -33,3 +33,35 @@ html, body {
   border-radius: 4px;
   cursor: pointer;
 } 
+
+.measure-toolbar {
+  position: absolute;
+  top: 120px;      /* position below draw-toolbar */
+  left: 15px;
+  z-index: 1000;
+}
+.measure-toolbar button {
+  padding: 6px 12px;
+  background: #414548;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.draw-toolbar button,
+.measure-toolbar button {
+  background: #414548;
+  color: #fff;
+  border: none;
+  border-radius: 8px;      /* Slightly more round for consistency */
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;         /* Large icon */
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.08); /* Optional subtle shadow */
+  transition: background 0.2s;
+}
