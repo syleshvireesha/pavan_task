@@ -10,24 +10,27 @@
     <script src="https://cdn.jsdelivr.net/npm/ol-layerswitcher@4.1.2/dist/ol-layerswitcher.js"></script> -->
 
     <!-- ol-geocoder CSS and JS -->
-    <link href="https://cdn.jsdelivr.net/npm/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet"> 
     <!-- <script src="https://cdn.jsdelivr.net/npm/ol-geocoder/dist/ol-geocoder.js"></script> -->
-
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%; /* Important so child % heights work */
-      }
-      .map {
-        width: 100%;
-        height: 100%;
-      }
+      
     </style>
   </head>
   <body>
-    <div id="map" class="map"></div>
+    <div id="map" class="map">
+    <div class="draw-toolbar">
+    <button id="mapButton" title="Draw"><i class="fa-solid fa-pencil"></i></button>
+    <div id="drawOptions" class="draw-options" style="display: none;">
+      <button class="draw-option" data-type="Point"><i class="fa-solid fa-location-dot"></i></button>
+      <button class="draw-option" data-type="LineString"><i class="fa-solid fa-slash"></i></button>
+      <button class="draw-option" data-type="Polygon"><i class="fa-solid fa-draw-polygon"></i></button>
+    </div>
+    </div>
 
+    </div>
+    
     <script type="module" src="main.js"></script>
   </body>
 </html>

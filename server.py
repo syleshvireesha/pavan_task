@@ -16,11 +16,20 @@ DB_HOST = CONFIG.DB_HOST
 DB_NAME = CONFIG.DB_NAME
 DB_USER = CONFIG.DB_USER
 DB_PASS = CONFIG.DB_PASS
+GEOMETRY_DB_NAME = CONFIG.GEOMETRY_DB_NAME
 
 def get_db_connection():
     return psycopg2.connect(
         host=DB_HOST,
         database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS
+    )
+
+def get_db_geometry_connection():
+    return psycopg2.connect(
+        host=DB_HOST,
+        database=GEOMETRY_DB_NAME,
         user=DB_USER,
         password=DB_PASS
     )
@@ -60,5 +69,31 @@ def login():
         return jsonify({"message": "Invalid username or password"}), 401
 
 
+
+@app.route('/api/save-geometry', methods=['POST'])
+def save_geometry():
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "No data provided"}), 400
+
+    geojson_str = str(data['geometry'])  # Convert dict to string for SQL
+    conn_geom = get_db_geometry_connection()
+    cur = conn_geom.cursor()
+    try:
+        cur.execute(
+            "INSERT INTO geometries (geom) VALUES (ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)) RETURNING id",
+            (geojson_str,)
+        )
+        new_id = cur.fetchone()[0]
+        conn_geom.commit()
+        return jsonify({"success": True, "id": new_id}), 200
+    except Exception as e:
+        conn_geom.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        cur.close()
+        conn_geom.close()
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=3000)
+    app.run(debug=True, port=8081)

@@ -25,6 +25,8 @@ import LayerSwitcher from 'ol-layerswitcher';
 
 import Geocoder from 'ol-geocoder';
 
+import Draw from 'ol/interaction/Draw.js';
+
 
 // Get the role from localStorage
 const userRole = localStorage.getItem('role');
@@ -207,4 +209,70 @@ const geocoder = new Geocoder('nominatim', {
 });
 
 map.addControl(geocoder);
+
+
+
+////////////////////////////// Draw feature ///////////////////////////////////////
+document.getElementById('mapButton').onclick = function() {
+  const options = document.getElementById('drawOptions');
+  options.style.display = options.style.display === 'none' ? 'flex' : 'none';
+};
+const typeSelect = document.getElementById('type');
+const source = new VectorSource({wrapX: false});
+
+let draw; // global so we can remove it later
+
+function addInteraction(drawType) {
+  
+  if (draw) {
+    map.removeInteraction(draw);
+  }
+  if (drawType && drawType !== 'None') {
+    console.log(drawType);
+    draw = new Draw({
+      source: source, // Make sure 'source' is defined and points to your vector source
+      type: drawType,
+    });
+    map.addInteraction(draw);
+    
+    // Listen for the drawend event
+    draw.on('drawend', function(event) {
+      const feature = event.feature;
+      // Convert to GeoJSON
+      const geojson = new GeoJSON().writeFeature(feature);
+      console.log('Drawn feature as GeoJSON:', geojson);
+      // Here you can send geojson to your backend/database
+
+      // Send GeoJSON to backend
+    fetch('http://localhost:8081/api/save-geometry', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: geojson
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Saved to database:', data);
+    })
+    .catch(error => {
+      console.error('Error saving geometry:', error);
+    });
+
+
+    });
+    
+    // document.getElementById('undo').addEventListener('click', function () {
+    //   draw.removeLastPoint();
+    // });
+  }
+}
+
+document.querySelectorAll('.draw-option').forEach(btn => {
+  btn.onclick = function() {
+    const drawType = btn.dataset.type;
+    addInteraction(drawType);
+    document.getElementById('drawOptions').style.display = 'none';
+  };
+});
 }
