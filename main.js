@@ -14,7 +14,8 @@ import GeoJSON from 'ol/format/GeoJSON.js';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import StadiaMaps from 'ol/source/StadiaMaps.js';
-
+import { circular } from 'ol/geom/Polygon.js';
+import Feature from 'ol/Feature.js';
 
 import Style from 'ol/style/Style.js';
 import Stroke from 'ol/style/Stroke.js';
@@ -217,7 +218,7 @@ document.getElementById('mapButton').onclick = function() {
   const options = document.getElementById('drawOptions');
   options.style.display = options.style.display === 'none' ? 'flex' : 'none';
 };
-const typeSelect = document.getElementById('type');
+// const typeSelect = document.getElementById('type');
 const source = new VectorSource({wrapX: false});
 
 let draw; // global so we can remove it later
@@ -237,7 +238,15 @@ function addInteraction(drawType) {
     
     // Listen for the drawend event
     draw.on('drawend', function(event) {
-      const feature = event.feature;
+      let feature = event.feature;
+      let geometry = feature.getGeometry();
+
+      // If geometry is a Circle, convert to Polygon
+      if (geometry.getType() === 'Circle') {
+        // Convert circle to polygon with 64 sides
+        const polygon = circular(geometry.getCenter(), geometry.getRadius(), 64);
+        feature = new Feature(polygon);
+      }
       // Convert to GeoJSON
       const geojson = new GeoJSON().writeFeature(feature);
       console.log('Drawn feature as GeoJSON:', geojson);
