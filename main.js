@@ -28,6 +28,7 @@ import Geocoder from 'ol-geocoder';
 
 import Draw from 'ol/interaction/Draw.js';
 
+import {initializeMeasure, startMeasure } from './measure.js';
 
 // Get the role from localStorage
 const userRole = localStorage.getItem('role');
@@ -295,5 +296,23 @@ document.querySelectorAll('.draw-option').forEach(btn => {
 
 
 ////////////////////////////// Measure feature ///////////////////////////////////////
+initializeMeasure(map);
+
+document.getElementById('measureButton').onclick = function() {
+  const options = document.getElementById('measureOptions');
+  options.style.display = options.style.display === 'none' ? 'flex' : 'none';
+}
+
+
+document.querySelectorAll('.measure-option').forEach(btn => {
+  btn.onclick = function() {
+    const measureType = btn.dataset.type;
+
+    // use measure.js
+    startMeasure(measureType, map);
+
+    document.getElementById('measureOptions').style.display = 'none';
+  };
+});
 
 }
