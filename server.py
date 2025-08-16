@@ -16,6 +16,7 @@ DB_HOST = CONFIG.DB_HOST
 DB_NAME = CONFIG.DB_NAME
 DB_USER = CONFIG.DB_USER
 DB_PASS = CONFIG.DB_PASS
+
 GEOMETRY_DB_NAME = CONFIG.GEOMETRY_DB_NAME
 
 def get_db_connection():
@@ -78,10 +79,12 @@ def save_geometry():
 
     geojson_str = str(data['geometry'])  # Convert dict to string for SQL
     conn_geom = get_db_geometry_connection()
+    print(conn_geom)
     cur = conn_geom.cursor()
+    print(geojson_str)
     try:
         cur.execute(
-            "INSERT INTO geometries (geom) VALUES (ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)) RETURNING id",
+            "INSERT INTO public.geometries (geom) VALUES (ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)) RETURNING id",
             (geojson_str,)
         )
         new_id = cur.fetchone()[0]
@@ -96,4 +99,4 @@ def save_geometry():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8081)
+    app.run(debug=True, port=8082)

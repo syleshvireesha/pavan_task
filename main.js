@@ -110,7 +110,7 @@ const vectorSource = new VectorSource({
   url: function (extent) {
     return (
       'http://localhost:8081/geoserver/wfs?service=WFS&' +
-      'version=1.0.0&request=GetFeature&typename=GIS_PG_WS:india_cities_with_state&' + 
+      'version=1.0.0&request=GetFeature&typename=GIS_PG_WS:geometries&' + 
       'outputFormat=application/json&srsname=EPSG:4326&' +
       'bbox=' + extent.join(',') 
     );
@@ -122,7 +122,7 @@ const vectorSource = new VectorSource({
 // Create vector layer to display features
 const vectorLayer = new VectorLayer({
   source: vectorSource,
-  title: 'India Cities',
+  title: 'Geometries',
   style: new Style({
     image: new CircleStyle({
       radius: 2,
@@ -244,7 +244,7 @@ function addInteraction(drawType) {
       // Here you can send geojson to your backend/database
 
       // Send GeoJSON to backend
-    fetch('http://localhost:8081/api/save-geometry', {
+    fetch('http://localhost:8082/api/save-geometry', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -254,6 +254,8 @@ function addInteraction(drawType) {
     .then(response => response.json())
     .then(data => {
       console.log('Saved to database:', data);
+      vectorSource.clear();      // Remove old features
+      vectorSource.refresh();  // Reload features from server
     })
     .catch(error => {
       console.error('Error saving geometry:', error);
@@ -265,6 +267,12 @@ function addInteraction(drawType) {
     // document.getElementById('undo').addEventListener('click', function () {
     //   draw.removeLastPoint();
     // });
+  document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape' && draw) {
+    map.removeInteraction(draw);
+    draw = null;
+  }
+    });
   }
 }
 
